@@ -4,72 +4,46 @@ from typing import Dict, Optional
 
 import pytest
 
-from src import regex
+from src import _base
 
 TestCase = namedtuple('TestCase', 'given_expression given_string expected_result')
 
 
-def assert_molecule(
-    given_expression: re.Pattern,
-    given_string: str,
-    expected_result: Optional[Dict[str, str]],
-) -> None:
-    result = given_expression.match(given_string)
-
-    if expected_result is None:
-        assert result is None, f'Expected no match, but got: {repr(result.groupdict())}'
-    else:
-        assert result is not None, f'Expected match, but got: None'
-        assert result.groupdict() == expected_result
-
-
 @pytest.mark.parametrize(
     'given_expression, given_string, expected_result', (
-        # Atom.DATE
-        TestCase(regex.Atom.DATE, '1970-01-01', {'year': '1970', 'month': '01', 'day': '01'}),
-        TestCase(regex.Atom.DATE, '2000-02-03', {'year': '2000', 'month': '02', 'day': '03'}),
-        TestCase(regex.Atom.DATE, '98-02-03', None),
-        TestCase(regex.Atom.DATE, '2000/02-03', None),
-        # Atom.TIME
-        TestCase(regex.Atom.TIME, '00:00:00', {'hour': '00', 'minute': '00', 'second': '00', 'microsecond': None}),
-        TestCase(regex.Atom.TIME, '23:59:59', {'hour': '23', 'minute': '59', 'second': '59', 'microsecond': None}),
-        TestCase(regex.Atom.TIME, '00:00:00.000001', {'hour': '00', 'minute': '00', 'second': '00', 'microsecond': '000001'}),
-        TestCase(regex.Atom.TIME, '00:00:00.1', {'hour': '00', 'minute': '00', 'second': '00', 'microsecond': '1'}),
-        TestCase(regex.Atom.TIME, '00:00:00.100000', {'hour': '00', 'minute': '00', 'second': '00', 'microsecond': '100000'}),
-        TestCase(regex.Atom.TIME, '00:00:00.0000001', None),
-        # Atom.TIMEZONE
-        TestCase(regex.Atom.TIMEZONE, 'Z', {'timezone': 'Z'}),
-        TestCase(regex.Atom.TIMEZONE, '+00:00', {'timezone': '+00:00'}),
-        TestCase(regex.Atom.TIMEZONE, '-08:00', {'timezone': '-08:00'}),
-        TestCase(regex.Atom.TIMEZONE, '+05:30', {'timezone': '+05:30'}),
-        TestCase(regex.Atom.TIMEZONE, '+1:00', None),
-        TestCase(regex.Atom.TIMEZONE, '00:00', None),
-        # Atom.PROC_ID
-        TestCase(regex.Atom.PROC_ID, '0345347597345', {'proc_id': '0345347597345'}),
-        TestCase(regex.Atom.PROC_ID, '7a4e19c66688', {'proc_id': '7a4e19c66688'}),
-        # Atom.THREAD_ID
-        TestCase(regex.Atom.THREAD_ID, '0345347597345', {'thread_id': '0345347597345'}),
-        TestCase(regex.Atom.THREAD_ID, '7a4e19c66688', {'thread_id': '7a4e19c66688'}),
-        # Atom.LEVEL
-        TestCase(regex.Atom.LEVEL, 'Error', {'level': 'Error'}),
-        TestCase(regex.Atom.LEVEL, 'INFORMATION', {'level': 'INFORMATION'}),
-        TestCase(regex.Atom.LEVEL, 'warning', {'level': 'warning'}),
-        # Atom.LOG_IP
-        TestCase(regex.Atom.IP, '192.168.1.1', {'ip': '192.168.1.1'}),
-        TestCase(regex.Atom.IP, '000.0000.00.00', None),
-        TestCase(regex.Atom.IP, '912.456.123.123', None),
-        # Atom.RFC5424_SEVERITY
-        TestCase(regex.Atom.RFC5424_SEVERITY, '0', {'severity': '0'}),
-        TestCase(regex.Atom.RFC5424_SEVERITY, '83', {'severity': '83'}),
-        TestCase(regex.Atom.RFC5424_SEVERITY, '191', {'severity': '191'}),
-        # Atom.RFC5424_VERSION
-        TestCase(regex.Atom.RFC5424_VERSION, '1', {'version': '1'}),
-        TestCase(regex.Atom.RFC5424_VERSION, '42', {'version': '42'}),
-        # Atom.RFC5424_HOSTNAME
-        # Atom.RFC5424_APPNAME
-        # Atom.RFC5424_MSGID
-        ### DOCKER:d8e210ec875a0871880e004f8fc37e0bf56140093155b8d55aec93d9dc66a53e~mariadb_1~sha256:20da7ed64a1e90fbee45ce9c14a4145fda05182b3ca712b8bf6fe5044d5bf6e6~million12/mariadb~docker
-        # Atom.RFC5424_STRUCTURED_DATA
+        # BaseAtom.DATE
+        TestCase(_base.BaseAtom.DATE, '1970-01-01', {'year': '1970', 'month': '01', 'day': '01'}),
+        TestCase(_base.BaseAtom.DATE, '2000-02-03', {'year': '2000', 'month': '02', 'day': '03'}),
+        TestCase(_base.BaseAtom.DATE, '98-02-03', None),
+        TestCase(_base.BaseAtom.DATE, '2000/02-03', None),
+        # BaseAtom.TIME
+        TestCase(_base.BaseAtom.TIME, '00:00:00', {'hour': '00', 'minute': '00', 'second': '00', 'microsecond': None}),
+        TestCase(_base.BaseAtom.TIME, '23:59:59', {'hour': '23', 'minute': '59', 'second': '59', 'microsecond': None}),
+        TestCase(_base.BaseAtom.TIME, '00:00:00.000001', {'hour': '00', 'minute': '00', 'second': '00', 'microsecond': '000001'}),
+        TestCase(_base.BaseAtom.TIME, '00:00:00.1', {'hour': '00', 'minute': '00', 'second': '00', 'microsecond': '1'}),
+        TestCase(_base.BaseAtom.TIME, '00:00:00.100000', {'hour': '00', 'minute': '00', 'second': '00', 'microsecond': '100000'}),
+        TestCase(_base.BaseAtom.TIME, '00:00:00.0000001', None),
+        # BaseAtom.TIMEZONE
+        TestCase(_base.BaseAtom.TIMEZONE, 'Z', {'timezone': 'Z'}),
+        TestCase(_base.BaseAtom.TIMEZONE, '+00:00', {'timezone': '+00:00'}),
+        TestCase(_base.BaseAtom.TIMEZONE, '-08:00', {'timezone': '-08:00'}),
+        TestCase(_base.BaseAtom.TIMEZONE, '+05:30', {'timezone': '+05:30'}),
+        TestCase(_base.BaseAtom.TIMEZONE, '+1:00', None),
+        TestCase(_base.BaseAtom.TIMEZONE, '00:00', None),
+        # BaseAtom.PROC_ID
+        TestCase(_base.BaseAtom.PROC_ID, '0345347597345', {'proc_id': '0345347597345'}),
+        TestCase(_base.BaseAtom.PROC_ID, '7a4e19c66688', {'proc_id': '7a4e19c66688'}),
+        # BaseAtom.THREAD_ID
+        TestCase(_base.BaseAtom.THREAD_ID, '0345347597345', {'thread_id': '0345347597345'}),
+        TestCase(_base.BaseAtom.THREAD_ID, '7a4e19c66688', {'thread_id': '7a4e19c66688'}),
+        # BaseAtom.LEVEL
+        TestCase(_base.BaseAtom.LEVEL, 'Error', {'level': 'Error'}),
+        TestCase(_base.BaseAtom.LEVEL, 'INFORMATION', {'level': 'INFORMATION'}),
+        TestCase(_base.BaseAtom.LEVEL, 'warning', {'level': 'warning'}),
+        # BaseAtom.IP
+        TestCase(_base.BaseAtom.IP, '192.168.1.1', {'ip': '192.168.1.1'}),
+        TestCase(_base.BaseAtom.IP, '000.0000.00.00', None),
+        TestCase(_base.BaseAtom.IP, '912.456.123.123', None),
     )
 )
 def test_atom(
@@ -84,72 +58,3 @@ def test_atom(
     else:
         assert result is not None, f'Expected match, but got: None'
         assert result.groupdict() == expected_result
-
-
-
-RFC5424_1 = f'<30>1 2020-03-22T12:35:47.385660+02:00 host.localdomain 6e8ef9a56b54 927 6e8ef9a56b54 - {MYSQL_1}'
-RFC5424_2 = '<165>1 2003-10-11T22:14:15.003Z mymachine.example.com evntslog - ID47 [exampleSDID@32473 iut="3" eventSource="Application" eventID="1011"] BOM An application event log entry...'
-RFC5424_3 = '<165>1 2003-10-11T22:14:15.003Z mymachine.example.com evntslog - ID47 [exampleSDID@32473 iut="3" eventSource="Application" eventID="1011"][examplePriority@32473 class="high"]'
-
-
-@pytest.mark.parametrize(
-    'given_expression, given_string, expected_result', (
-        # Syslog (rfc5424micro) from Docker container
-        TestCase(
-            regex.Molecule.RFC5424,
-            RFC5424_1,
-            {
-                'severity': '30', 'version': '1',
-                'year': '2020', 'month': '03', 'day': '22',
-                'hour': '12', 'minute': '35', 'second': '47', 'microsecond': '385660',
-                'timezone': '+02:00',
-                'hostname': 'host.localdomain',
-                'appname': '6e8ef9a56b54',
-                'proc_id': '927',
-                'msgid': '6e8ef9a56b54',
-                'structured_data': '-',
-                'message': MYSQL_1,
-            }
-        ),
-        # Syslog example 3 - with STRUCTURED-DATA
-        TestCase(
-            regex.Molecule.RFC5424,
-            RFC5424_2,
-            {
-                'severity': '165', 'version': '1',
-                'year': '2003', 'month': '10', 'day': '11',
-                'hour': '22', 'minute': '14', 'second': '15', 'microsecond': '003',
-                'timezone': 'Z',
-                'hostname': 'mymachine.example.com',
-                'appname': 'evntslog',
-                'proc_id': '-',
-                'msgid': 'ID47',
-                'structured_data': '[exampleSDID@32473 iut="3" eventSource="Application" eventID="1011"]',
-                'message': 'BOM An application event log entry...',
-            }
-        ),
-        # Syslog example 4 - STRUCTURED-DATA Only
-        TestCase(
-            regex.Molecule.RFC5424,
-            RFC5424_3,
-            {
-                'severity': '165', 'version': '1',
-                'year': '2003', 'month': '10', 'day': '11',
-                'hour': '22', 'minute': '14', 'second': '15', 'microsecond': '003',
-                'timezone': 'Z',
-                'hostname': 'mymachine.example.com',
-                'appname': 'evntslog',
-                'proc_id': '-',
-                'msgid': 'ID47',
-                'structured_data': '[exampleSDID@32473 iut="3" eventSource="Application" eventID="1011"][examplePriority@32473 class="high"]',
-                'message': None,
-            }
-        ),
-    ),
-)
-def test_molecule_rfc5424(
-    given_expression: re.Pattern,
-    given_string: str,
-    expected_result: Optional[Dict[str, str]],
-) -> None:
-    assert_molecule(given_expression, given_string, expected_result)
