@@ -1,6 +1,6 @@
 import re
 
-from src import _base, add_context, add_regex
+from src import _base
 
 
 class Atom(_base.BaseAtom):
@@ -15,7 +15,3 @@ MYSQL = re.compile((
     r'({THREAD_ID}\s)?\[{LEVEL}\]\s(\[{MYSQL_ERR_CODE}\]\s)?(\[{MYSQL_SUBSYSTEM}\]\s)?'
     r'{MESSAGE}$'
 ).format(**Atom.asdict()))
-
-
-add_regex(MYSQL)
-add_context('mysql', ['err_code', 'subsystem'])

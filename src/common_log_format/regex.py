@@ -1,6 +1,6 @@
 import re
 
-from src import _base, add_context, add_regex
+from src import _base
 
 
 class Atom(_base.BaseAtom):
@@ -19,13 +19,3 @@ HTTPD = re.compile((
     r'"{MESSAGE}"\s{LOG_HTTP_STATUS}\s{LOG_CONTENT_SIZE}'
     r'(\s{LOG_REFERER})?(\s{LOG_USER_AGENT})?$'
 ).format(**Atom.asdict()))
-
-add_regex(HTTPD)
-add_context('httpd', [
-    'authuser',
-    'content_size',
-    'http_status',
-    'referer',
-    'user_agent',
-    'user_identifier',
-])

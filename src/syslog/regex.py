@@ -1,6 +1,6 @@
 import re
 
-from src import _base, add_context, add_regex
+from src import _base
 
 
 class Atom(_base.BaseAtom):
@@ -32,20 +32,3 @@ RFC5424 = re.compile((
     r'{RFC5424_STRUCTURED_DATA}'
     r'(\s{MESSAGE})?$'
 ).format(**Atom.asdict()))
-
-add_regex(RFC5424)
-add_context('syslog', [
-    'appname',
-    'hostname',
-    'msgid',
-    'severity',
-    'structured_data',
-    'version',
-])
-add_context('docker', [
-    'container_id',
-    'container_name',
-    'daemon_name',
-    'image_id',
-    'image_name',
-])

@@ -1,6 +1,6 @@
 import re
 
-from src import _base, add_context, add_regex
+from src import _base
 
 
 class Atom(_base.BaseAtom):
@@ -14,7 +14,3 @@ NGINX_ERROR = re.compile((
     r'{NGINX_ERROR_DATE}\s{TIME}{TIMEZONE}?\s\[{LEVEL}\]\s{PROC_ID}#{THREAD_ID}:\s'
     r'(\*{NGINX_CID}\s)?{MESSAGE}$'
 ).format(**Atom.asdict()))
-
-
-add_regex(NGINX_ERROR)
-add_context('nginx', ['cid'])
