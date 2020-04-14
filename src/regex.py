@@ -9,19 +9,7 @@ class AsdictMixin:
 
 # https://regex101.com/library/Wgbxn2
 class Atom(AsdictMixin):
-    DATE = r'(?P<year>[12]\d{3})-(?P<month>0\d|1[012])-(?P<day>[012]\d|3[01])'
-    TIME = r'(?P<hour>[01]\d|2[0-4]):(?P<minute>[0-5]\d):(?P<second>[0-5]\d|60)(?:\.(?P<microsecond>\d{1,6}))?'
-    TIMEZONE = r'(?P<timezone>Z|[+-](?:[01]\d|2[0-4]):?[0-5]\d)'
-    PROC_ID = r'(?P<proc_id>\S{1,128})'
-    THREAD_ID = r'(?P<thread_id>\S{1,128})'
-    PRIORITY = r'(?P<priority>[A-Z][A-Za-z]+)'  # Error, Warning, [Information|Note]
-    MYSQL_ERR_CODE = r'(?P<err_code>[A-Z0-9][A-Z0-9-]+)'
-    MYSQL_SUBSYSTEM = r'(?P<subsystem>[A-Z]\S+)'
-
-    MESSAGE = r'(?:(?P<message>.+))'
-
     # https://www.regexpal.com/22
-    LOG_IP = r'(?P<ip>(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))'
     LOG_RFC931 = r'(?P<user_identifier>-|\S+)'
     LOG_AUTHUSER = r'(?P<authuser>-|\S+)'
     LOG_DATE = r'(?P<day>[012]\d|3[01])/(?P<month>[A-Z][a-z]+)/(?P<year>[12]\d{3})'
@@ -44,14 +32,6 @@ class Atom(AsdictMixin):
 
 
 class Molecule(AsdictMixin):
-    # https://mariadb.com/kb/en/error-log/#format
-    # https://dev.mysql.com/doc/refman/8.0/en/error-log-format.html
-    MYSQL = re.compile((
-        r'{DATE}[T|\s]{TIME}{TIMEZONE}?\s'  # timestamp
-        r'({THREAD_ID}\s)?\[{PRIORITY}\]\s(\[{MYSQL_ERR_CODE}\]\s)?(\[{MYSQL_SUBSYSTEM}\]\s)?'
-        r'{MESSAGE}$'
-    ).format(**Atom.asdict()))
-
     # https://stackoverflow.com/a/26125951
     # https://github.com/phusion/nginx/blob/master/src/core/ngx_log.c
     NGINX_ERROR = re.compile((
@@ -62,7 +42,7 @@ class Molecule(AsdictMixin):
     # Common Log Format
     # Combined Log Format
     HTTPD = re.compile((
-        r'^{LOG_IP}\s{LOG_RFC931}\s{LOG_AUTHUSER}\s\[{LOG_DATE}:{TIME}(\s{TIMEZONE})?\] '
+        r'^{IP}\s{LOG_RFC931}\s{LOG_AUTHUSER}\s\[{LOG_DATE}:{TIME}(\s{TIMEZONE})?\] '
         r'"{MESSAGE}"\s{LOG_STATUS}\s{LOG_BYTES}'
         r'(\s{LOG_REFERER})?(\s{LOG_USER_AGENT})?$'
     ).format(**Atom.asdict()))

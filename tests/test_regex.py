@@ -54,17 +54,10 @@ def assert_molecule(
         TestCase(regex.Atom.PRIORITY, 'Error', {'priority': 'Error'}),
         TestCase(regex.Atom.PRIORITY, 'INFORMATION', {'priority': 'INFORMATION'}),
         TestCase(regex.Atom.PRIORITY, 'warning', None),
-        # Atom.MYSQL_ERR_CODE
-        TestCase(regex.Atom.MYSQL_ERR_CODE, '10051', {'err_code': '10051'}),
-        TestCase(regex.Atom.MYSQL_ERR_CODE, 'MY-010051', {'err_code': 'MY-010051'}),
-        TestCase(regex.Atom.MYSQL_ERR_CODE, 'ERROR 1052', None),
-        # Atom.MYSQL_SUBSYSTEM
-        TestCase(regex.Atom.MYSQL_SUBSYSTEM, 'InnoDB', {'subsystem': 'InnoDB'}),
-        TestCase(regex.Atom.MYSQL_SUBSYSTEM, 'Server', {'subsystem': 'Server'}),
         # Atom.LOG_IP
-        TestCase(regex.Atom.LOG_IP, '192.168.1.1', {'ip': '192.168.1.1'}),
-        TestCase(regex.Atom.LOG_IP, '000.0000.00.00', None),
-        TestCase(regex.Atom.LOG_IP, '912.456.123.123', None),
+        TestCase(regex.Atom.IP, '192.168.1.1', {'ip': '192.168.1.1'}),
+        TestCase(regex.Atom.IP, '000.0000.00.00', None),
+        TestCase(regex.Atom.IP, '912.456.123.123', None),
         # Atom.LOG_RFC931
         TestCase(regex.Atom.LOG_RFC931, '-', {'user_identifier': '-'}),
         TestCase(regex.Atom.LOG_RFC931, 'foo', {'user_identifier': 'foo'}),
@@ -130,13 +123,6 @@ def test_atom(
         assert result.groupdict() == expected_result
 
 
-MYSQL_1 = '2020-03-22T12:35:47.538083Z 0 [Note] [MY-012487] [InnoDB] InnoDB: DDL log recovery : begin'
-MYSQL_2 = '2020-03-22T12:35:47.538083Z 4 [Warning] [10051] [Server] Event Scheduler: scheduler thread started with id 4'
-MYSQL_3 = '2020-03-22T12:35:47.538083Z 0 [Note] [InnoDB] InnoDB: DDL log recovery : begin'
-MYSQL_4 = '2020-03-22T12:35:47.538083Z 0 [Note] [MY-012487] InnoDB: DDL log recovery : begin'
-MYSQL_5 = '2020-03-22T12:35:47.538083Z 0 [Note] InnoDB: DDL log recovery : begin'
-
-MARIADB_1 = '2020-03-22 12:35:47 140310100753288 [Note] InnoDB:  Percona XtraDB (http://www.percona.com) 5.6.38-83.0 started'
 
 NGINX_ERROR_1 = '2020/03/21 23:30:24 [crit] 30016#0: *4 stat() "/var/www/html/index.php" failed (13: Permission denied), client: 127.0.0.1, server: example.com, request: "GET /index.php HTTP/1.1", host: "example.com"'
 
@@ -146,108 +132,6 @@ COMMON_LOG_FORMAT_2 = '127.0.0.1 - - [19/Jan/2005:21:47:11 +0000] "GET /brum.css
 COMBINED_LOG_FORMAT_1 = '127.0.0.1 - frank [10/Oct/2000:13:55:36 +0130] "GET /apache_pb.gif HTTP/1.0" 200 2326 "http://www.example.com/start.html" "Mozilla/4.08 [en] (Win98; I ;Nav)"'
 
 
-@pytest.mark.parametrize(
-    'given_expression, given_string, expected_result', (
-        # MySQL >= 8.0 (full)
-        TestCase(
-            regex.Molecule.MYSQL,
-            MYSQL_1,
-            {
-                'year': '2020', 'month': '03', 'day': '22',
-                'hour': '12', 'minute': '35', 'second': '47', 'microsecond': '538083',
-                'timezone': 'Z',
-                'thread_id': '0',
-                'priority': 'Note',
-                'err_code': 'MY-012487',
-                'subsystem': 'InnoDB',
-                'message': 'InnoDB: DDL log recovery : begin',
-            },
-        ),
-        TestCase(
-            regex.Molecule.MYSQL,
-            MYSQL_2,
-            {
-                'year': '2020', 'month': '03', 'day': '22',
-                'hour': '12', 'minute': '35', 'second': '47', 'microsecond': '538083',
-                'timezone': 'Z',
-                'thread_id': '4',
-                'priority': 'Warning',
-                'err_code': '10051',
-                'subsystem': 'Server',
-                'message': 'Event Scheduler: scheduler thread started with id 4',
-            },
-        ),
-        # MySQL >= 8.0 (variations with missing parts)
-        TestCase(
-            regex.Molecule.MYSQL,
-            MYSQL_3,
-            {
-                'year': '2020', 'month': '03', 'day': '22',
-                'hour': '12', 'minute': '35', 'second': '47', 'microsecond': '538083',
-                'timezone': 'Z',
-                'thread_id': '0',
-                'priority': 'Note',
-                'err_code': None,
-                'subsystem': 'InnoDB',
-                'message': 'InnoDB: DDL log recovery : begin',
-            },
-        ),
-        TestCase(
-            regex.Molecule.MYSQL,
-            MYSQL_4,
-            {
-                'year': '2020', 'month': '03', 'day': '22',
-                'hour': '12', 'minute': '35', 'second': '47', 'microsecond': '538083',
-                'timezone': 'Z',
-                'thread_id': '0',
-                'priority': 'Note',
-                'err_code': 'MY-012487',
-                'subsystem': None,
-                'message': 'InnoDB: DDL log recovery : begin',
-            },
-        ),
-        # MySQL < 8.0
-        TestCase(
-            regex.Molecule.MYSQL,
-            MYSQL_5,
-            {
-                'year': '2020', 'month': '03', 'day': '22',
-                'hour': '12', 'minute': '35', 'second': '47', 'microsecond': '538083',
-                'timezone': 'Z',
-                'thread_id': '0',
-                'priority': 'Note',
-                'err_code': None,
-                'subsystem': None,
-                'message': 'InnoDB: DDL log recovery : begin',
-            },
-        ),
-        # MariaDB >= 10.1.5
-        TestCase(
-            regex.Molecule.MYSQL,
-            MARIADB_1,
-            {
-                'year': '2020', 'month': '03', 'day': '22',
-                'hour': '12', 'minute': '35', 'second': '47', 'microsecond': None,
-                'timezone': None,
-                'thread_id': '140310100753288',
-                'priority': 'Note',
-                'err_code': None,
-                'subsystem': None,
-                'message': 'InnoDB:  Percona XtraDB (http://www.percona.com) 5.6.38-83.0 started',
-            },
-        ),
-    ),
-)
-def test_molecule_mysql__positive(
-    given_expression: re.Pattern,
-    given_string: str,
-    expected_result: Optional[Dict[str, str]],
-) -> None:
-    assert_molecule(
-        given_expression=given_expression,
-        given_string=given_string,
-        expected_result=expected_result,
-    )
 
 
 @pytest.mark.parametrize(
@@ -390,7 +274,7 @@ RFC5424_3 = '<165>1 2003-10-11T22:14:15.003Z mymachine.example.com evntslog - ID
                 'message': 'BOM An application event log entry...',
             }
         ),
-        # Syslog example 4 -  STRUCTURED-DATA Only
+        # Syslog example 4 - STRUCTURED-DATA Only
         TestCase(
             regex.Molecule.RFC5424,
             RFC5424_3,
