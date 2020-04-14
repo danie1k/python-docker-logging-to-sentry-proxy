@@ -13,8 +13,8 @@ class BaseAtom(AsdictMixin):
     DATE = r'(?P<year>[12]\d{3})-(?P<month>0\d|1[012])-(?P<day>[012]\d|3[01])'
     # https://www.regexpal.com/22
     IP = r'(?P<ip>(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))'
+    LEVEL = r'(?P<level>[A-Za-z]+)'
     MESSAGE = r'(?:(?P<message>.+))'
-    PRIORITY = r'(?P<priority>[A-Z][A-Za-z]+)'
     PROC_ID = r'(?P<proc_id>\S{1,128})'
     THREAD_ID = r'(?P<thread_id>\S{1,128})'
     TIME = (

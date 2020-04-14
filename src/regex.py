@@ -18,10 +18,6 @@ class Atom(AsdictMixin):
     LOG_REFERER = r'"(?P<referer>([a-z]+://\S+)?)"'
     LOG_USER_AGENT = r'"(?P<user_agent>[^\"]+)"'
 
-    NGINX_ERROR_DATE = r'(?P<year>[12]\d{3})/(?P<month>0\d|1[012])/(?P<day>[012]\d|3[01])'
-    NGINX_LEVEL = r'(?P<level>[a-z]+)'
-    NGINX_CID = r'(?P<cid>[0-9]+)'
-
     RFC5424_SEVERITY = r'(?P<severity>\d{1,3})'
     RFC5424_VERSION = r'(?P<version>\d{1,2})'
     RFC5424_HOSTNAME = r'(?P<hostname>\S{1,255})'
@@ -32,13 +28,6 @@ class Atom(AsdictMixin):
 
 
 class Molecule(AsdictMixin):
-    # https://stackoverflow.com/a/26125951
-    # https://github.com/phusion/nginx/blob/master/src/core/ngx_log.c
-    NGINX_ERROR = re.compile((
-        r'{NGINX_ERROR_DATE}\s{TIME}{TIMEZONE}?\s\[{NGINX_LEVEL}\]\s{PROC_ID}#{THREAD_ID}:\s'
-        r'(\*{NGINX_CID}\s)?{MESSAGE}$'
-    ).format(**Atom.asdict()))
-
     # Common Log Format
     # Combined Log Format
     HTTPD = re.compile((

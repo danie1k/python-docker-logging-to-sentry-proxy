@@ -12,7 +12,7 @@ class Atom(_base.BaseAtom):
 # https://dev.mysql.com/doc/refman/8.0/en/error-log-format.html
 MYSQL = re.compile((
     r'{DATE}[T|\s]{TIME}{TIMEZONE}?\s'  # timestamp
-    r'({THREAD_ID}\s)?\[{PRIORITY}\]\s(\[{MYSQL_ERR_CODE}\]\s)?(\[{MYSQL_SUBSYSTEM}\]\s)?'
+    r'({THREAD_ID}\s)?\[{LEVEL}\]\s(\[{MYSQL_ERR_CODE}\]\s)?(\[{MYSQL_SUBSYSTEM}\]\s)?'
     r'{MESSAGE}$'
 ).format(**Atom.asdict()))
 

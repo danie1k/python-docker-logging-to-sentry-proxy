@@ -50,10 +50,10 @@ def assert_molecule(
         # Atom.THREAD_ID
         TestCase(regex.Atom.THREAD_ID, '0345347597345', {'thread_id': '0345347597345'}),
         TestCase(regex.Atom.THREAD_ID, '7a4e19c66688', {'thread_id': '7a4e19c66688'}),
-        # Atom.PRIORITY
-        TestCase(regex.Atom.PRIORITY, 'Error', {'priority': 'Error'}),
-        TestCase(regex.Atom.PRIORITY, 'INFORMATION', {'priority': 'INFORMATION'}),
-        TestCase(regex.Atom.PRIORITY, 'warning', None),
+        # Atom.LEVEL
+        TestCase(regex.Atom.LEVEL, 'Error', {'level': 'Error'}),
+        TestCase(regex.Atom.LEVEL, 'INFORMATION', {'level': 'INFORMATION'}),
+        TestCase(regex.Atom.LEVEL, 'warning', {'level': 'warning'}),
         # Atom.LOG_IP
         TestCase(regex.Atom.IP, '192.168.1.1', {'ip': '192.168.1.1'}),
         TestCase(regex.Atom.IP, '000.0000.00.00', None),
@@ -84,17 +84,6 @@ def assert_molecule(
         # Atom.LOG_USER_AGENT
         TestCase(regex.Atom.LOG_USER_AGENT, '"Mozilla/4.08 [en] (Win98; I ;Nav)"', {'user_agent': 'Mozilla/4.08 [en] (Win98; I ;Nav)'}),
         TestCase(regex.Atom.LOG_USER_AGENT, '"Foo Bar"', {'user_agent': 'Foo Bar'}),
-        # Atom.NGINX_ERROR_DATE
-        TestCase(regex.Atom.NGINX_ERROR_DATE, '1970/01/01', {'year': '1970', 'month': '01', 'day': '01'}),
-        TestCase(regex.Atom.NGINX_ERROR_DATE, '2000/02/03', {'year': '2000', 'month': '02', 'day': '03'}),
-        TestCase(regex.Atom.NGINX_ERROR_DATE, '2000-02-03', None),
-        # Atom.NGINX_LEVEL
-        TestCase(regex.Atom.NGINX_LEVEL, 'emerg', {'level': 'emerg'}),
-        TestCase(regex.Atom.NGINX_LEVEL, 'notice', {'level': 'notice'}),
-        TestCase(regex.Atom.NGINX_LEVEL, 'DEBUG', None),
-        # Atom.NGINX_CID
-        TestCase(regex.Atom.NGINX_CID, '0', {'cid': '0'}),
-        TestCase(regex.Atom.NGINX_CID, '345', {'cid': '345'}),
         # Atom.RFC5424_SEVERITY
         TestCase(regex.Atom.RFC5424_SEVERITY, '0', {'severity': '0'}),
         TestCase(regex.Atom.RFC5424_SEVERITY, '83', {'severity': '83'}),
@@ -123,45 +112,10 @@ def test_atom(
         assert result.groupdict() == expected_result
 
 
-
-NGINX_ERROR_1 = '2020/03/21 23:30:24 [crit] 30016#0: *4 stat() "/var/www/html/index.php" failed (13: Permission denied), client: 127.0.0.1, server: example.com, request: "GET /index.php HTTP/1.1", host: "example.com"'
-
 COMMON_LOG_FORMAT_1 = '127.0.0.1 - frank [10/Oct/2000:13:55:36 -0700] "GET /apache_pb.gif HTTP/1.0" 200 2326'
 COMMON_LOG_FORMAT_2 = '127.0.0.1 - - [19/Jan/2005:21:47:11 +0000] "GET /brum.css HTTP/1.1" 304 0'
 
 COMBINED_LOG_FORMAT_1 = '127.0.0.1 - frank [10/Oct/2000:13:55:36 +0130] "GET /apache_pb.gif HTTP/1.0" 200 2326 "http://www.example.com/start.html" "Mozilla/4.08 [en] (Win98; I ;Nav)"'
-
-
-
-
-@pytest.mark.parametrize(
-    'given_expression, given_string, expected_result', (
-        TestCase(
-            regex.Molecule.NGINX_ERROR,
-            NGINX_ERROR_1,
-            {
-                'year': '2020', 'month': '03', 'day': '21',
-                'hour': '23', 'minute': '30', 'second': '24', 'microsecond': None,
-                'timezone': None,
-                'level': 'crit',
-                'proc_id': '30016',
-                'thread_id': '0',
-                'cid': '4',
-                'message': 'stat() "/var/www/html/index.php" failed (13: Permission denied), client: 127.0.0.1, server: example.com, request: "GET /index.php HTTP/1.1", host: "example.com"',
-            },
-        ),
-    ),
-)
-def test_molecule_nginx_error(
-    given_expression: re.Pattern,
-    given_string: str,
-    expected_result: Optional[Dict[str, str]],
-) -> None:
-    assert_molecule(
-        given_expression=given_expression,
-        given_string=given_string,
-        expected_result=expected_result,
-    )
 
 
 @pytest.mark.parametrize(
