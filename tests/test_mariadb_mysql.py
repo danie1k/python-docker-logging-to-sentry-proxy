@@ -21,7 +21,6 @@ TestCase = namedtuple('TestCase', 'given_expression given_string expected_result
         # MYSQL_SUBSYSTEM
         TestCase(regex.Atom.MYSQL_SUBSYSTEM, 'InnoDB', {'subsystem': 'InnoDB'}),
         TestCase(regex.Atom.MYSQL_SUBSYSTEM, 'Server', {'subsystem': 'Server'}),
-
     )
 )
 def test_atom(

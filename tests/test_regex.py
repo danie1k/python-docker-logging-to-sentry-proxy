@@ -58,32 +58,6 @@ def assert_molecule(
         TestCase(regex.Atom.IP, '192.168.1.1', {'ip': '192.168.1.1'}),
         TestCase(regex.Atom.IP, '000.0000.00.00', None),
         TestCase(regex.Atom.IP, '912.456.123.123', None),
-        # Atom.LOG_RFC931
-        TestCase(regex.Atom.LOG_RFC931, '-', {'user_identifier': '-'}),
-        TestCase(regex.Atom.LOG_RFC931, 'foo', {'user_identifier': 'foo'}),
-        # Atom.LOG_AUTHUSER
-        TestCase(regex.Atom.LOG_AUTHUSER, '-', {'authuser': '-'}),
-        TestCase(regex.Atom.LOG_AUTHUSER, 'bar', {'authuser': 'bar'}),
-        # Atom.LOG_DATE
-        TestCase(regex.Atom.LOG_DATE, '10/Oct/2000', {'year': '2000', 'month': 'Oct', 'day': '10'}),
-        TestCase(regex.Atom.LOG_DATE, '10/Oct/98', None),
-        # Atom.LOG_STATUS
-        TestCase(regex.Atom.LOG_STATUS, '101', {'status': '101'}),
-        TestCase(regex.Atom.LOG_STATUS, '202', {'status': '202'}),
-        TestCase(regex.Atom.LOG_STATUS, '303', {'status': '303'}),
-        TestCase(regex.Atom.LOG_STATUS, '505', {'status': '505'}),
-        TestCase(regex.Atom.LOG_STATUS, '99', None),
-        TestCase(regex.Atom.LOG_STATUS, '700', None),
-        # Atom.LOG_BYTES
-        TestCase(regex.Atom.LOG_BYTES, '0', {'bytes': '0'}),
-        TestCase(regex.Atom.LOG_BYTES, '58973459', {'bytes': '58973459'}),
-        # Atom.LOG_REFERER
-        TestCase(regex.Atom.LOG_REFERER, '"http://www.example.com/start.html"', {'referer': 'http://www.example.com/start.html'}),
-        TestCase(regex.Atom.LOG_REFERER, '"ftps://www.example.com/file.php"', {'referer': 'ftps://www.example.com/file.php'}),
-        TestCase(regex.Atom.LOG_REFERER, '"www.example.com"', None),
-        # Atom.LOG_USER_AGENT
-        TestCase(regex.Atom.LOG_USER_AGENT, '"Mozilla/4.08 [en] (Win98; I ;Nav)"', {'user_agent': 'Mozilla/4.08 [en] (Win98; I ;Nav)'}),
-        TestCase(regex.Atom.LOG_USER_AGENT, '"Foo Bar"', {'user_agent': 'Foo Bar'}),
         # Atom.RFC5424_SEVERITY
         TestCase(regex.Atom.RFC5424_SEVERITY, '0', {'severity': '0'}),
         TestCase(regex.Atom.RFC5424_SEVERITY, '83', {'severity': '83'}),
@@ -111,80 +85,6 @@ def test_atom(
         assert result is not None, f'Expected match, but got: None'
         assert result.groupdict() == expected_result
 
-
-COMMON_LOG_FORMAT_1 = '127.0.0.1 - frank [10/Oct/2000:13:55:36 -0700] "GET /apache_pb.gif HTTP/1.0" 200 2326'
-COMMON_LOG_FORMAT_2 = '127.0.0.1 - - [19/Jan/2005:21:47:11 +0000] "GET /brum.css HTTP/1.1" 304 0'
-
-COMBINED_LOG_FORMAT_1 = '127.0.0.1 - frank [10/Oct/2000:13:55:36 +0130] "GET /apache_pb.gif HTTP/1.0" 200 2326 "http://www.example.com/start.html" "Mozilla/4.08 [en] (Win98; I ;Nav)"'
-
-
-@pytest.mark.parametrize(
-    'given_expression, given_string, expected_result', (
-        # Common Log Format
-        TestCase(
-            regex.Molecule.HTTPD,
-            COMMON_LOG_FORMAT_1,
-            {
-                'ip': '127.0.0.1',
-                'user_identifier': '-',
-                'authuser': 'frank',
-                'year': '2000', 'month': 'Oct', 'day': '10',
-                'hour': '13', 'minute': '55', 'second': '36', 'microsecond': None,
-                'timezone': '-0700',
-                'message': 'GET /apache_pb.gif HTTP/1.0',
-                'status': '200',
-                'bytes': '2326',
-                'referer': None,
-                'user_agent': None,
-            },
-        ),
-        TestCase(
-            regex.Molecule.HTTPD,
-            COMMON_LOG_FORMAT_2,
-            {
-                'ip': '127.0.0.1',
-                'user_identifier': '-',
-                'authuser': '-',
-                'year': '2005', 'month': 'Jan', 'day': '19',
-                'hour': '21', 'minute': '47', 'second': '11', 'microsecond': None,
-                'timezone': '+0000',
-                'message': 'GET /brum.css HTTP/1.1',
-                'status': '304',
-                'bytes': '0',
-                'referer': None,
-                'user_agent': None,
-            },
-        ),
-        # Combined Log Format
-        TestCase(
-            regex.Molecule.HTTPD,
-            COMBINED_LOG_FORMAT_1,
-            {
-                'ip': '127.0.0.1',
-                'user_identifier': '-',
-                'authuser': 'frank',
-                'year': '2000', 'month': 'Oct', 'day': '10',
-                'hour': '13', 'minute': '55', 'second': '36', 'microsecond': None,
-                'timezone': '+0130',
-                'message': 'GET /apache_pb.gif HTTP/1.0',
-                'status': '200',
-                'bytes': '2326',
-                'referer': 'http://www.example.com/start.html',
-                'user_agent': 'Mozilla/4.08 [en] (Win98; I ;Nav)',
-            },
-        ),
-    ),
-)
-def test_molecule_httpd(
-    given_expression: re.Pattern,
-    given_string: str,
-    expected_result: Optional[Dict[str, str]],
-) -> None:
-    assert_molecule(
-        given_expression=given_expression,
-        given_string=given_string,
-        expected_result=expected_result,
-    )
 
 
 RFC5424_1 = f'<30>1 2020-03-22T12:35:47.385660+02:00 host.localdomain 6e8ef9a56b54 927 6e8ef9a56b54 - {MYSQL_1}'
