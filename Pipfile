@@ -5,6 +5,8 @@ verify_ssl = true
 
 [dev-packages]
 pytest = "==5.4.1"
+pytest-cov = "*"
+coverage = "*"
 
 [packages]
 
